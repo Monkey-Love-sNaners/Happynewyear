@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow: hidden;
+        }
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #countdown-timer {
+            font-size: 48px;
+            color: white;
+            text-shadow: 0 0 10px white;
+        }
+        #happy-new-year {
+            font-size: 64px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #ff00ff;
+        }
+        #message-button {
+            font-size: 24px;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #message-button:hover {
+            background-color: #45a049;
+        }
+        #timer-container {
+            font-size: 48px;
+            color: white;
+            text-shadow: 0 0 10px white;
+        }
+        #surprise-text {
+            font-size: 24px;
+            color: white;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+        .crack {
+            position: absolute;
+            width: 10px;
+            height: 100px;
+            background: white;
+            animation: growCrack 5s linear infinite;
+        }
+        @keyframes growCrack {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.5); }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1 id="happy-new-year" style="display:none;"></h1>
+        <div id="countdown-timer"></div>
+        <button id="message-button" style="display:none;"></button>
+        <div id="timer-container" style="display:none;"></div>
+        <p id="surprise-text" style="display:none;"></p>
+    </div>
+    <script>
+        function updateCountdown() {
+            const now = new Date();
+            const target = new Date();
+            target.setUTCHours(22, 0, 0, 0);
+            if (now > target) target.setUTCDate(target.getUTCDate() + 1);
+            const diff = target - now;
+
+            const minutesLeft = Math.floor(diff / (1000 * 60)) % 60;
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById("countdown-timer").innerText = `Time to Midnight (CAT): ${hours}h ${minutes}m ${seconds}s`;
+
+            // Cracks appear at 10 minutes
+            if (minutesLeft === 10) {
+                createCracks();
+            }
+
+            // Cracks change color at 5 minutes
+            if (minutesLeft === 5) {
+                changeCrackColors();
+            }
+
+            // Display "I tried my best" at 1 minute
+            if (minutesLeft === 1 && seconds === 0) {
+                const countdownTimer = document.getElementById("countdown-timer");
+                countdownTimer.style.display = "none";
+                const surpriseText = document.getElementById("surprise-text");
+                surpriseText.style.display = "block";
+                surpriseText.innerText = "I tried my best";
+                setTimeout(() => {
+                    surpriseText.style.display = "none";
+                    countdownTimer.style.display = "block";
+                }, 5000);
+            }
+        }
+
+        function createCracks() {
+            const body = document.body;
+            for (let i = 0; i < 10; i++) {
+                const crack = document.createElement("div");
+                crack.classList.add("crack");
+                crack.style.top = `${Math.random() * window.innerHeight}px`;
+                crack.style.left = `${Math.random() * window.innerWidth}px`;
+                body.appendChild(crack);
+            }
+        }
+
+        function changeCrackColors() {
+            const cracks = document.querySelectorAll(".crack");
+            cracks.forEach(crack => {
+                setInterval(() => {
+                    crack.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                }, 500);
+            });
+        }
+
+        function randomSurprises() {
+            setInterval(() => {
+                const surpriseText = document.createElement("p");
+                surpriseText.innerText = "A random surprise!";
+                surpriseText.style.position = "absolute";
+                surpriseText.style.top = `${Math.random() * window.innerHeight}px`;
+                surpriseText.style.left = `${Math.random() * window.innerWidth}px`;
+                surpriseText.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                document.body.appendChild(surpriseText);
+                setTimeout(() => {
+                    document.body.removeChild(surpriseText);
+                }, 3000);
+            }, 300000); // Every 5 minutes
+        }
+
+        function main() {
+            document.getElementById("countdown-timer").style.display = "none";
+            const happyNewYear = document.getElementById("happy-new-year");
+            happyNewYear.style.display = "block";
+            happyNewYear.innerText = "HAPPY NEW YEAR!";
+        }
+
+        setInterval(updateCountdown, 1000);
+        randomSurprises();
+    </script>
+</body>
+</html>
